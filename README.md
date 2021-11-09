@@ -1,4 +1,4 @@
-# @itsjavi/jsx-runtime
+# @karma_core/jsx-runtime
 
 [![npm](https://img.shields.io/npm/v/@itsjavi/jsx-runtime.svg)](https://www.npmjs.com/package/@itsjavi/jsx-runtime)
 [![Build Status](https://img.shields.io/github/workflow/status/itsjavi/jsx-runtime/test/main.svg)](https://travis-ci.org/itsjavi/jsx-runtime)
