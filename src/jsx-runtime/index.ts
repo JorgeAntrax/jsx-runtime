@@ -39,15 +39,16 @@ jsx.customAttributes = ['children', 'key', 'props']
 
 const isStandardAttribute = (key: string) => !jsx.customAttributes.includes(key)
 
-class Component<P = {}> implements ijJSX.Component {
-  element: ijJSX.ComponentDOMElement = null
-  readonly props: P & ijJSX.ComponentProps<P>
 
-  constructor (props: P & ijJSX.ComponentProps<P>) {
+class KarmaElement<P = {}> implements kJSX.KarmaElement {
+  element: kJSX.KarmaDOMElement = null
+  readonly props: P & kJSX.KarmaElementProps<P>
+
+  constructor (props: P & kJSX.KarmaElementProps<P>) {
     this.props = props
   }
 
-  render (): ijJSX.Node {
+  render (): kJSX.Node {
     return null
   }
 }
@@ -61,14 +62,14 @@ jsx.setGlobalThis = (newThis: Window & typeof globalThis) => {
 }
 
 jsx.renderDOM = (
-  renderable: ijJSX.Node,
+  renderable: kJSX.Node,
   container: jsxDOMContainer = null,
-  component: ijJSX.Component | null = null
+  component: kJSX.KarmaElement | null = null
 ): jsxDOMElement => {
-  const isComponent = (renderable instanceof Component)
+  const isKarmaElement = (renderable instanceof KarmaElement)
   // @ts-ignore
-  let node: JSX.Element = isComponent ? renderable.render() : renderable
-  if (isComponent) {
+  let node: JSX.Element = isKarmaElement ? renderable.render() : renderable
+  if (isKarmaElement) {
     // @ts-ignore
     component = renderable
   }
@@ -92,7 +93,7 @@ jsx.renderDOM = (
     : doc.createElement(node.type)
 
   // @ts-ignore
-  elem.jsxComponent = component
+  elem.jsxKarmaElement = component
 
   const props = node.props
   const propKeys = Object.keys(props)
@@ -119,17 +120,17 @@ jsx.renderDOM = (
     })
 
   if (Array.isArray(node.props.children)) {
-    node.props.children.forEach((child: ijJSX.Node) => jsx.renderDOM(child, elem, component))
+    node.props.children.forEach((child: kJSX.Node) => jsx.renderDOM(child, elem, component))
   }
 
   let prevElement = null
 
-  if (isComponent && component !== null) {
+  if (isKarmaElement && component !== null) {
     prevElement = component.element
     component.element = elem
   }
 
-  if (isComponent && component !== null && component.onWillMount !== undefined) {
+  if (isKarmaElement && component !== null && component.onWillMount !== undefined) {
     component.onWillMount(prevElement)
   }
 
@@ -137,7 +138,7 @@ jsx.renderDOM = (
     container.appendChild(elem)
   }
 
-  if (isComponent && component !== null && component.onDidMount !== undefined) {
+  if (isKarmaElement && component !== null && component.onDidMount !== undefined) {
     component.onDidMount(prevElement)
   }
 
@@ -152,13 +153,13 @@ jsx.renderDOM = (
  * https://www.reactenlightenment.com/react-jsx/5.7.html
  */
 
-export declare namespace ijJSX {
+export declare namespace kJSX {
   type Key = string | number;
   type KeyValuePair = { [key: string]: unknown }
   type Child = Element | string | number;
   type Fragment = {} | Array<Node>;
-  type Node = Child | Fragment | Component | boolean | null | undefined;
-  type Children = Node
+  type Node = Child | Fragment | KarmaElement | boolean | null | undefined;
+  type Children = Node | Array<Node>;
   type Props = KeyValuePair & { children?: Children, text?: string };
 
   interface Element {
@@ -167,10 +168,10 @@ export declare namespace ijJSX {
     key: Key | null;
   }
 
-  type ComponentDOMElement = HTMLElement | DocumentFragment | null
-  type ComponentProps<P> = P & ijJSX.Props
+  type KarmaDOMElement = HTMLElement | DocumentFragment | null
+  type KarmaElementProps<P> = P & kJSX.Props
 
-  interface Component<P = {}> {
+  interface KarmaElement<P = {}> {
     /**
      * (Unofficial React API)
      *
@@ -178,9 +179,9 @@ export declare namespace ijJSX {
      *
      * Beware that this is not compatible with the React API.
      */
-    element: ComponentDOMElement
+    element: KarmaDOMElement
 
-    readonly props: ComponentProps<P>;
+    readonly props: KarmaElementProps<P>;
 
     /**
      * (Unofficial React API)
@@ -188,14 +189,14 @@ export declare namespace ijJSX {
      * Runs after calling `render`, but before adding the element to the DOM.
      *
      */
-    onWillMount? (prevElement: ComponentDOMElement): void;
+    onWillMount? (prevElement: KarmaDOMElement): void;
 
     /**
      * (Unofficial React API)
      *
      * Runs after calling `render` and after adding the element to the DOM.
      */
-    onDidMount? (prevElement: ComponentDOMElement): void;
+    onDidMount? (prevElement: KarmaDOMElement): void;
 
     render (): Node;
   }
@@ -204,35 +205,36 @@ export declare namespace ijJSX {
 declare global {
   namespace JSX {
     // JSX node definition
-    interface Element extends ijJSX.Element {
+    type KeyValuePair = { [key: string]: unknown }
+    interface Element extends kJSX.Element {
     }
 
-    // Component class definition
-    interface ElementClass extends ijJSX.Component<any> {
+    // KarmaElement class definition
+    interface ElementClass extends kJSX.KarmaElement<any> {
       render (): Element;
     }
 
-    // Property that will hold the HTML attributes of the Component
+    // Property that will hold the HTML attributes of the KarmaElement
     interface ElementAttributesProperty {
       props: {};
     }
 
-    // Property in 'props' that will hold the children of the Component
+    // Property in 'props' that will hold the children of the KarmaElement
     interface ElementChildrenAttribute {
-      children: ijJSX.Children;
+      children: kJSX.Children;
     }
 
     // Common attributes of the standard HTML elements and JSX components
     interface IntrinsicAttributes {
-      key?: ijJSX.Key
+      key?: kJSX.Key
       class?: never
-      className?: string | string[]
+      className?: string | string[] | KeyValuePair
 
       [key: string]: any
     }
 
     // Common attributes of the JSX components only
-    interface IntrinsicClassAttributes<ComponentClass> {
+    interface IntrinsicClassAttributes<KarmaElementClass> {
 
     }
 
@@ -245,4 +247,4 @@ declare global {
 
 const render = jsx.renderDOM
 
-export { jsx, jsx as jsxs, jsxFragment as Fragment, render, Component }
+export { jsx, jsx as jsxs, jsxFragment as Fragment, render, KarmaElement }

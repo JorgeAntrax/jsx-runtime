@@ -1,17 +1,17 @@
 {
-  "name": "@itsjavi/jsx-runtime",
+  "name": "@karma_core/jsx-runtime",
   "amdName": "jsxrt",
-  "version": "0.1.0",
-  "description": "Extremely lightweight JSX runtime for TypeScript and JavaScript. Write JSX without React!",
-  "author": "Javi Aguilar",
+  "version": "0.0.1",
+  "description": "The JSX Runtime based on @itsjavi/jsx-runtime",
+  "author": "Leonardo Quintana",
   "license": "MIT",
-  "homepage": "https://github.com/itsjavi/jsx-runtime#readme",
+  "homepage": "https://github.com/JorgeAntrax/jsx-runtime#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itsjavi/jsx-runtime.git"
+    "url": "git+https://github.com/JorgeAntrax/jsx-runtime.git"
   },
   "bugs": {
-    "url": "https://github.com/itsjavi/jsx-runtime/issues"
+    "url": "https://github.com/JorgeAntrax/jsx-runtime/issues"
   },
   "keywords": [
     "react",
